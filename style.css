@@ -1,20 +1,32 @@
 /* =========================================================
    Mayank Jangid — Portfolio
-   Pure HTML + CSS. No frameworks, no JavaScript.
+   Plain HTML + CSS, plus a tiny script.js for the theme toggle.
+   No frameworks.
    ========================================================= */
 
-/* ---------- Tokens ---------- */
+/* ---------- Tokens ----------
+   :root holds the LIGHT theme (the default, no class needed).
+   body.dark-theme overrides every token below for dark mode.
+   Every other rule in this file reads colors through these
+   variables, so toggling the class recolors the whole page. */
 :root {
-  --bg: #1c1c1c;
-  --bg-elevated: #212121;
-  --surface: #262626;
-  --surface-alt: #202020;
-  --text: #fffaf1;
-  --muted: #a3a19b;
-  --accent: #89e900;
-  --accent-soft: rgba(137, 233, 0, 0.12);
-  --border: #383634;
-  --border-soft: #2d2b29;
+  --bg: #ffffff;
+  --bg-elevated: #f5f5f3;
+  --surface: #ffffff;
+  --surface-alt: #f0f0ee;
+  --text: #1a1a1a;
+  --muted: #5c5c58;
+  --accent: #4a7a00;
+  --accent-rgb: 74, 122, 0;
+  --accent-soft: rgba(74, 122, 0, 0.1);
+  --accent-hover: #3d6600;
+  --on-accent: #ffffff;
+  --border: #dcdcd8;
+  --border-soft: #e8e8e5;
+  --bg-rgb: 255, 255, 255;
+  --tk-key: #4b50c8;
+  --tk-prop: #8a6100;
+  --tk-str: #1f7a4d;
 
   --font-body: Inter, Arial, Helvetica, sans-serif;
 
@@ -28,6 +40,27 @@
   --space-4: 2.5rem;
   --space-5: 4rem;
   --space-6: 6rem;
+}
+
+/* ---------- Dark theme override ---------- */
+body.dark-theme {
+  --bg: #1c1c1c;
+  --bg-elevated: #212121;
+  --surface: #262626;
+  --surface-alt: #202020;
+  --text: #fffaf1;
+  --muted: #a3a19b;
+  --accent: #89e900;
+  --accent-rgb: 137, 233, 0;
+  --accent-soft: rgba(137, 233, 0, 0.12);
+  --accent-hover: #a0ff11;
+  --on-accent: #14210a;
+  --border: #383634;
+  --border-soft: #2d2b29;
+  --bg-rgb: 28, 28, 28;
+  --tk-key: #9fa3ff;
+  --tk-prop: #e6c675;
+  --tk-str: #7fd8a4;
 }
 
 /* ---------- Reset ---------- */
@@ -45,32 +78,7 @@ body {
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
-  
-}
-body.dark-theme {
-  background-color: #6d6666;
-  color: #f5f5f5;
-  --text:var(--bg)#110f0f;
-}
-body.dark-theme .navbar {
-    background-color: #d0c9c9;
-    border-bottom: 1px solid #020202;
-    --text: #110f0f;
-}
-
-/* ☀️ LIGHT MODE (Default) */
-nav a, 
-.logo-text {
-    color: black;
-    /* optional: add a transition so the color changes smoothly */
-    transition: color 0.3s ease;
-}
-
-/* 🌙 DARK MODE */
-/* When the body has the .dark-theme class, these elements become white */
-body.dark-theme nav a, 
-body.dark-theme .logo-text {
-    color: white;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 h1, h2, h3, h4, p, ul {
@@ -173,7 +181,7 @@ label:focus-visible {
 
 .inline-link {
   color: var(--accent);
-  border-bottom: 1px solid rgba(137, 233, 0, 0.4);
+  border-bottom: 1px solid rgba(var(--accent-rgb), 0.4);
   transition: border-color 0.2s ease;
 }
 .inline-link:hover { border-color: var(--accent); }
@@ -183,7 +191,7 @@ label:focus-visible {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(28, 28, 28, 0.92);
+  background: rgba(var(--bg-rgb), 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-soft);
 }
@@ -317,9 +325,9 @@ label:focus-visible {
 
 .btn-primary {
   background: var(--accent);
-  color: #14210a;
+  color: var(--on-accent);
 }
-.btn-primary:hover { background: #a0ff11; transform: translateY(-1px); }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); }
 
 .btn-outline {
   border-color: var(--border);
@@ -340,6 +348,25 @@ label:focus-visible {
   border: 1px dashed var(--border);
   color: var(--muted);
   cursor: default;
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text);
+  margin-left: auto;
+  margin-right: var(--space-3);
+  transition: border-color 0.2s ease, opacity 0.2s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent);
+  opacity: 0.85;
 }
 
 /* ---------- Hero visual (CSS only) ---------- */
@@ -402,10 +429,10 @@ label:focus-visible {
 }
 
 .terminal-body .indent { padding-left: 1.4em; }
-.tk-key { color: #9fa3ff; }
+.tk-key { color: var(--tk-key); }
 .tk-var { color: var(--accent); }
-.tk-prop { color: #e6c675; }
-.tk-str { color: #7fd8a4; }
+.tk-prop { color: var(--tk-prop); }
+.tk-str { color: var(--tk-str); }
 
 .cursor {
   display: inline-block;
@@ -704,14 +731,14 @@ label:focus-visible {
   height: 7px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 0 rgba(137, 233, 0, 0.6);
+  box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.6);
   animation: pulse 1.8s ease-out infinite;
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(137, 233, 0, 0.5); }
-  70% { box-shadow: 0 0 0 6px rgba(137, 233, 0, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(137, 233, 0, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb), 0); }
 }
 
 /* ---------- Connect / Contact ---------- */
@@ -898,20 +925,6 @@ label:focus-visible {
   .connect-grid {
     grid-template-columns: 1fr;
   }
-  .theme-toggle {
-  background: none;
-  border: 1px solid currentColor;
-  border-radius: 4px;
-  padding: 6px 10px;
-  font-size: 1rem;
-  line-height: 1;
-  cursor: pointer;
-  color: inherit;
-}
-
-.theme-toggle:hover {
-  opacity: 0.8;
-}
 }
 
 /* Mobile */
@@ -923,4 +936,71 @@ label:focus-visible {
   .float-tag { display: none; }
   .project-top { flex-direction: column; }
   .resume-cta { flex-direction: column; align-items: flex-start; }
+}
+
+/* ---------- Experience ---------- */
+.experience-card {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  padding: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.experience-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.experience-top h3 {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.experience-org {
+  color: var(--accent);
+  font-size: 0.95rem;
+  margin-top: 0.3em;
+}
+
+.experience-desc {
+  max-width: 70ch;
+}
+
+.experience-points {
+  margin-top: var(--space-2);
+  color: var(--muted);
+  max-width: 70ch;
+}
+
+.experience-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--border-soft);
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.subsection-header {
+  max-width: 640px;
+  margin-bottom: var(--space-4);
+}
+
+.subsection-header h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.subsection-header p {
+  margin-top: var(--space-1);
+  color: var(--muted);
 }
